@@ -1,0 +1,94 @@
+
+FileVersion:		2 
+
+ResolutionOfTime:	Volumes 
+
+Experiment:			VisualPerception_Hysteresis 
+
+BackgroundColor:	0  0  0 
+TextColor:			255  255  255 
+
+TimeCourseColor:	1  1  1 
+TimeCourseThick:	3 
+ReferenceFuncColor:	0   0  80 
+ReferenceFuncThick:	2 
+
+NrOfConditions:		13 
+ 
+Static 
+12 
+5	8 
+13	16 
+21	24 
+29	32 
+37	40 
+45	48 
+53	56 
+61	64 
+69	72 
+77	80 
+85	88 
+93	96 
+Color:	190 190 190 
+
+P0 
+1 
+33	36 
+Color:	150 210 240 
+
+P275 
+1 
+89	92 
+Color:	150 210 240 
+
+P550 
+1 
+25	28 
+Color:	150 210 240 
+
+P825 
+1 
+49	52 
+Color:	150 210 240 
+
+P1100 
+1 
+9	12 
+Color:	150 210 240 
+
+P1375 
+1 
+65	68 
+Color:	150 210 240 
+
+P1650 
+1 
+17	20 
+Color:	150 210 240 
+
+P1924 
+1 
+41	44 
+Color:	150 210 240 
+
+P2200 
+1 
+57	60 
+Color:	150 210 240 
+
+P2475 
+1 
+73	76 
+Color:	150 210 240 
+
+P2750 
+1 
+81	84 
+Color:	150 210 240 
+
+Discard 
+2 
+1	4 
+97	100 
+Color:	130 130 130 
+
