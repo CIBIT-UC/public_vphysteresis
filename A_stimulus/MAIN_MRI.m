@@ -40,6 +40,8 @@ addpath('functions_mri')
 
 S = struct();
 
+Outputs = struct();
+
 %% Input
 % --- Subject Name
 S.SUBJECT = 'TestSubject';
@@ -59,44 +61,45 @@ screenNumber = 50;
 
 %% Load Textures
 texture_file = fullfile(S.input_path,sprintf('Textures_%i_sB%i_tB%i_l%i.mat',...
-        S.height,S.screenBackground,S.textBackground,S.lines));
-    
+    S.height,S.screenBackground,S.textBackground,S.lines));
+
 if exist(texture_file,'file') ~= 2
     [ T ] = buildTextures( S );
 else
     load(texture_file);
 end
 
-%% Localiser
-OutputLoc = runLocalizer( S );
+%% Localizer
+Outputs.Loc = runLocalizer( S );
 
 %% Run C1
-OutputRunC1 = runHyst1234( 'RunC1' , S , T );
+Outputs.RunC1 = runHyst1234( 'RunC1' , S , T );
 
 %% Run C2
-OutputRunC2 = runHyst1234( 'RunC2' , S , T );
+Outputs.RunC2 = runHyst1234( 'RunC2' , S , T );
 
 %% Run C3
-OutputRunC3 = runHyst1234( 'RunC3' , S , T );
+Outputs.RunC3 = runHyst1234( 'RunC3' , S , T );
 
 %% Run C4
-OutputRunC4 = runHyst1234( 'RunC4' , S , T );
+Outputs.RunC4 = runHyst1234( 'RunC4' , S , T );
 
 %% Run H1
-OutputRunH1 = runHyst1234( 'RunH1' , S , T );
+Outputs.RunH1 = runHyst1234( 'RunH1' , S , T );
 
 %% Run H2
-OutputRunH2 = runHyst1234( 'RunH2' , S , T );
+Outputs.RunH2 = runHyst1234( 'RunH2' , S , T );
 
 %% Run H3
-OutputRunH3 = runHyst1234( 'RunH3' , S , T );
+Outputs.RunH3 = runHyst1234( 'RunH3' , S , T );
 
 %% Run H4
-OutputRunH4 = runHyst1234( 'RunH4' , S , T );
+Outputs.RunH4 = runHyst1234( 'RunH4' , S , T );
 
 %% Save Workspace
-save(fullfile(S.output_path,[ S.SUBJECT '_Workspace_' datestr(now,'HHMM_ddmmmmyyyy')]),...
-'S','OutputLoc','OutputRunC1','OutputRunC2','OutputRunC3','OutputRunC4','OutputRunH1','OutputRunH2','OutputRunH3','OutputRunH4');
+save(fullfile(S.output_path,...
+    [ S.SUBJECT '_Workspace_' datestr(now,'HHMM_ddmmmmyyyy')]),...
+    'S','Outputs');
 
 %% Close COMs
 % Just because you are cool.

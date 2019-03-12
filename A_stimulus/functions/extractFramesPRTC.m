@@ -1,8 +1,8 @@
-function [ framesCond , framesDots, framesPercentage , nFrames , nVols , condNames , nCond, intervalsPRT , intervals ] = extractFramesPRTC( path , name , TR , fps , nDots , blockVols )
+function [ ] = extractFramesPRTC( path , rr , TR , fps , nDots , blockVols , input_path)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-[ condNames , intervalsPRT , intervals ] = readProtocol( path , name , TR );
+[ condNames , intervalsPRT , intervals ] = readProtocol( path , sprintf('RunC%i.prt',rr) , TR );
 
 nVols = length(intervals);
 nFrames = nVols*fps*TR;
@@ -34,5 +34,9 @@ for t = 0:nVols-1
     end
     
 end
+
+save(fullfile(input_path,sprintf('Protocols_RunC%i.mat',rr)),...
+    'framesCond','framesDots','framesPercentage','nFrames',...
+    'condNames','nCond','intervalsPRT','intervals');
 
 end

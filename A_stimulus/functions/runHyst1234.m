@@ -1,6 +1,6 @@
 function [ OutputRun1234 ] = runHyst1234( run_name , S , T )
-%RUNRUN0 Stimulus function for run0
-% Usage: [ OutputRun0 ] = runRun0( run_name , S , T )
+%RUNHYST1234 Stimulus function for control and testing runs
+% Usage: [ OutputRun1234 ] = runHyst1234( run_name , S , T )
 %
 % Inputs:
 %   : run_name - string with run name and number
@@ -9,7 +9,7 @@ function [ OutputRun1234 ] = runHyst1234( run_name , S , T )
 %   : T - struct containg the textures
 %
 % Outputs:
-%   : OutputRun0 - struct containing time of start, end and trigger of the
+%   : OutputRun1234 - struct containing time of start, end and trigger of the
 %   stimulation, key presses and codes, user responses.
 %
 
@@ -28,11 +28,11 @@ if S.TRIGGER
 end
 
 %% Read PRT
-load(fullfile(S.input_path,['Protocols_' run_name '.mat']));
+load(fullfile(S.input_path,['Protocols_' run_name '.mat']),...
+    'framesCond','framesDots','framesPercentage','numFrames','condNames');
 
-%% Search for Black condition
+%% Identify discard and static conditions
 discardCondIdx = find(ismember(condNames, 'Discard')) ;
-
 staticCondIdx = find(ismember(condNames, 'Static')) ;
 
 %% Initialise key-related stuff
@@ -40,8 +40,7 @@ keysPressed = zeros(numFrames , 2);
 key_codes = zeros(2,1);
 KbName('UnifyKeyNames');
 
-%% Stim
-
+%% Stimulus
 try
     % -- Open Window
     [ windowID , winRect ] = Screen('OpenWindow', S.screenNumber , S.screenBackground );
@@ -75,7 +74,7 @@ try
     DrawFormattedText(windowID, text, 'center', 'center', S.white);
     Screen('Flip',windowID);
     KbStrokeWait;
-
+    
     % -- Map Keys / Identify Key Codes
     btUnique = false;
     
@@ -117,7 +116,8 @@ try
             key_codes(2) = find(code==1);
         end
         
-        if length(unique(key_codes))==2
+        % Check codes
+        if length(unique(key_codes)) == 2
             btUnique = true;
         else
             key_codes = zeros(2,1);
@@ -166,36 +166,32 @@ try
     init = GetSecs;
     
     while t < numFrames % Iteration on the frames
-                
+        
         % Make Texture
         windowtext = Screen('MakeTexture', windowID, T.Textures{textIndexY,textIndexX});
         
-%         if framesCond(t+1) ~= blackCondIdx % Not Black
-            
-            % Draw Lines
-            Screen('DrawTextures', windowID, windowtext)
-            
-            % Draw Dots
-            [ D ] = drawDots( windowID , D , T , S , textIndexX , textIndexY );
-            
-            % Update Texture Index
-            if all(framesCond(t+1) ~= [staticCondIdx,discardCondIdx]) % Not Static
-                textIndexY = textIndexY + 1;
-            end
-            
-            % Restrict Texture Index
-            if textIndexX > T.nTextX
-                textIndexX = 1;
-            elseif textIndexX <= 0
-                textIndexX = T.nTextX;
-            end
-            if textIndexY > T.nTextY
-                textIndexY = 1;
-            elseif textIndexY <= 0
-                textIndexY = T.nTextY;
-            end
-            
-%         end % End If Not Black
+        % Draw Lines
+        Screen('DrawTextures', windowID, windowtext)
+        
+        % Draw Dots
+        [ D ] = drawDots( windowID , D , T , S , textIndexX , textIndexY );
+        
+        % Update Texture Index
+        if all(framesCond(t+1) ~= [staticCondIdx,discardCondIdx]) % Not Static
+            textIndexY = textIndexY + 1;
+        end
+        
+        % Restrict Texture Index
+        if textIndexX > T.nTextX
+            textIndexX = 1;
+        elseif textIndexX <= 0
+            textIndexX = T.nTextX;
+        end
+        if textIndexY > T.nTextY
+            textIndexY = 1;
+        elseif textIndexY <= 0
+            textIndexY = T.nTextY;
+        end
         
         % Fixation Cross
         drawFixationCross( windowID , S , 101 , 0 );
@@ -206,7 +202,7 @@ try
         % -------- KEYS --------
         [keyPress,~,keyCode] = KbCheck();
         if keyPress
-            if keyCode(KbName('escape')) == 1 %Quit if "Esc" is pressed
+            if keyCode(KbName('escape')) == 1 % Quit if "Esc" is pressed
                 throw(MException('user:escape','Aborted by escape key.'))
             end
         end
@@ -231,20 +227,15 @@ try
         end
         
         keysPressed(t+1,2) = GetSecs;
-
+        
         % Clear Texture
         Screen('Close', windowtext);
         
         % Move dots
         [ D ] = moveDots( framesDots(t+1) , D , T , framesPercentage(t+1) );
         
-        % Record frames
-%         rect = round([S.xCenter-S.height/2 ; S.yCenter-S.height/2 ; S.xCenter+S.height/2 ; S.yCenter+S.height/2]);
-%         frameImage=Screen('GetImage', windowID, rect, [], [], []);
-%         imwrite(frameImage,[pwd '\output_frames\RunH_' num2str(t+1000) '.png'],'png');
-        
-        % -- Iterate frame
-        t = t+1;    
+        % Iterate frame
+        t = t+1;
         
     end % End of frame interation
     

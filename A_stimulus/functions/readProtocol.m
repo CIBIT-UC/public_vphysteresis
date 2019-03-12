@@ -1,15 +1,15 @@
 function [ cond_names , intervalsPRT , intervals , baseCondIndex ] = readProtocol( path , name , TR )
-%UNTITLED5 Summary of this function goes here
-%   Detailed explanation goes here
+%READPROTOCOL Read Brainvoyager .prt files
+%   Using NeuroElf
 
-Temp_prtFile = BVQXfile(fullfile(path , name));
+Temp_prtFile = xff(fullfile(path , name));
 
 type = Temp_prtFile.ResolutionOfTime;
 
 switch type
     case 'msec'
         prtFile = Temp_prtFile.ConvertToVol(TR*1000);
-%         prtFile.SaveAs(fullfile(path , [name(1:end-4) '_vol.prt']));
+        %         prtFile.SaveAs(fullfile(path , [name(1:end-4) '_vol.prt']));
     case 'Volumes'
         prtFile = Temp_prtFile;
 end
@@ -52,28 +52,3 @@ for cond = 1:length(cond_names)
 end
 
 end
-
-
-%%
-%         switch type
-%             case 'msec'
-%                 mod1 = mod(intervalsPRT.(cond_names{cond})(int,1),TR*1000);
-%                 if mod1 > 0
-%                     start = ceil(intervalsPRT.(cond_names{cond})(int,1) / (TR*1000));
-%                 else
-%                     start = floor(intervalsPRT.(cond_names{cond})(int,1) / (TR*1000)) + 1;
-%                 end
-%
-%                 mod2 = mod(intervalsPRT.(cond_names{cond})(int,2),TR*1000);
-%                 if mod2 > 0
-%                     finish = ceil(intervalsPRT.(cond_names{cond})(int,2) / (TR*1000));
-%                 else
-%                     finish = floor(intervalsPRT.(cond_names{cond})(int,2) / (TR*1000));
-%                 end
-%
-%                 intervals( start : finish ) = v;
-%
-%             case 'Volumes'
-%                 intervals(intervalsPRT.(cond_names{cond})(int,1) : intervalsPRT.(cond_names{cond})(int,2) ) = v;
-%         end
-

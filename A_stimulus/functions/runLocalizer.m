@@ -16,9 +16,10 @@ function [ OutputLoc ] = runLocalizer( S )
 OutputLoc = struct();
 
 %% Read PRT
-load(fullfile(S.input_path,'Protocols_Localizer.mat'));
+load(fullfile(S.input_path,'Protocols_Localizer.mat'),...
+    'condNames','framesCond','nCond','nFrames','nVols');
 
-movingIdx = 3;
+movingIdx = 3; % index of the moving conditions
 
 %% Dots Properties
 dots = struct();
@@ -32,23 +33,18 @@ dots.speed = 3;       %degrees/second
 dots.direction = [ 0 45 90 120 180 225 270 315 ];  %degrees (clockwise from straight up)
 dots.nDir = length(dots.direction);
 
-centersX = [ 0 ]; % in degrees
+% Start at the center of the screen
+dots.center = [0,0];
 
-for j = movingIdx:nCond
-    
-    dots.(condNames{j}).center = [centersX(j-(movingIdx-1)),0];
-    
-    % Calculate the left, right top and bottom of the aperture (in degrees)
-    dots.(condNames{j}).l =  dots.(condNames{j}).center(1)-dots.apertureSize(1)/2;
-    dots.(condNames{j}).r = dots.(condNames{j}).center(1)+dots.apertureSize(1)/2;
-    dots.(condNames{j}).b = dots.(condNames{j}).center(2)-dots.apertureSize(2)/2;
-    dots.(condNames{j}).t = dots.(condNames{j}).center(2)+dots.apertureSize(2)/2;
-    
-    % New random starting positions
-    dots.(condNames{j}).x = (rand(1,dots.nDots)-.5)*dots.apertureSize(1) + dots.(condNames{j}).center(1);
-    dots.(condNames{j}).y = (rand(1,dots.nDots)-.5)*dots.apertureSize(2) + dots.(condNames{j}).center(2);
-    
-end
+% Calculate the left, right top and bottom of the aperture (in degrees)
+dots.l = dots.center(1)-dots.apertureSize(1)/2;
+dots.r = dots.center(1)+dots.apertureSize(1)/2;
+dots.b = dots.center(2)-dots.apertureSize(2)/2;
+dots.t = dots.center(2)+dots.apertureSize(2)/2;
+
+% New random starting positions
+dots.x = (rand(1,dots.nDots)-.5)*dots.apertureSize(1) + dots.center(1);
+dots.y = (rand(1,dots.nDots)-.5)*dots.apertureSize(2) + dots.center(2);
 
 %% Stim
 
@@ -83,90 +79,88 @@ try
     if S.TRIGGER
         DrawFormattedText(windowID, 'Waiting to start...', 'center', 'center', S.white);
         Screen('Flip',windowID);
-        disp('[runLocaliser] Waiting for trigger...')
+        disp('[runLocalizer] Waiting for trigger...')
         
         [gotTrigger, timeStamp] = waitForTrigger(S.syncbox_handle,1,300); % timeOut = 5 min (300s)
         if gotTrigger
-            disp('[runLocaliser] Trigger Received.')
+            disp('[runLocalizer] Trigger Received.')
             IOPort('Flush', S.syncbox_handle);
             IOPort('Purge', S.syncbox_handle);
         else
-            disp('[runLocaliser] Trigger Not Received. Aborting!')
+            disp('[runLocalizer] Trigger Not Received. Aborting!')
             return
         end
     else
         DrawFormattedText(windowID, 'Press Enter to Start', 'center', 'center', S.white);
         Screen('Flip',windowID);
-        disp('[runLocaliser] Waiting to start...')
+        disp('[runLocalizer] Waiting to start...')
         KbPressWait;
     end
     
     % Frame Iteration
-    disp('[runLocaliser] Starting iteration...')
+    disp('[runLocalizer] Starting iteration...')
     
     init = GetSecs;
     
-    for i=1:nFrames % Iteration on the frames
+    for i = 1:nFrames % Iteration on the frames
         
         % -- Determine current condition
         c = framesCond(i);
         
         if c ~= 1 % Not Rest condition
             
-            for jj = movingIdx:nCond
-                
-                % Use the equation of an ellipse to determine which dots fall inside.
-                goodDots = ((dots.(condNames{jj}).x-dots.(condNames{jj}).center(1)).^2/(dots.apertureSize(1)/2)^2 + ...
-                    (dots.(condNames{jj}).y-dots.(condNames{jj}).center(2)).^2/(dots.apertureSize(2)/2)^2) < 1;
-                
-                pixpos.x = angle2pix(S,dots.(condNames{jj}).x)+ S.screenX/2;
-                pixpos.y = angle2pix(S,dots.(condNames{jj}).y)+ S.screenY/2;
-                
-                % Draw Dots
-                Screen('DrawDots',windowID,[pixpos.x(goodDots);pixpos.y(goodDots)], dots.size, dots.color,[0,0],1);
-                
-            end
+            % Use the equation of an ellipse to determine which dots fall inside.
+            goodDots = ((dots.x-dots.center(1)).^2/(dots.apertureSize(1)/2)^2 + ...
+                (dots.y-dots.center(2)).^2/(dots.apertureSize(2)/2)^2) < 1;
             
-            if any(c==movingIdx:nCond) % Moving conditions
+            pixpos.x = angle2pix(S.width,S.screenX,S.dist,...
+                dots.x)+ S.screenX/2;
+            pixpos.y = angle2pix(S.width,S.screenX,S.dist,...
+                dots.y)+ S.screenY/2;
+            
+            % Draw Dots
+            Screen('DrawDots',windowID,...
+                [pixpos.x(goodDots);pixpos.y(goodDots)], dots.size, ...
+                dots.color,[0,0],1);
+                       
+            if c == movingIdx % Moving condition
                 
                 if changeDir
                     changeDir = false;
+                    
                     % Movement
                     dx = cell(1,dots.nDir);
                     dy = cell(1,dots.nDir);
-                    for d = 1: dots.nDir
-                        
+                    
+                    for d = 1:dots.nDir                       
                         dx{d} = dots.speed*sin(dots.direction(d)*pi/180)/S.fps;
-                        dy{d} = -dots.speed*cos(dots.direction(d)*pi/180)/S.fps;
-                        
+                        dy{d} = -dots.speed*cos(dots.direction(d)*pi/180)/S.fps;           
                     end
                     
-                    idx = randperm(dots.nDots);                  
+                    idx = randperm(dots.nDots);
                 end
                 
                 % Update the dot position
-                for d = 1: dots.nDir
-                    
-                    dots.(condNames{c}).x(idx(d:dots.nDir:end)) = dots.(condNames{c}).x(idx(d:dots.nDir:end)) + dx{d};
-                    dots.(condNames{c}).y(idx(d:dots.nDir:end)) = dots.(condNames{c}).y(idx(d:dots.nDir:end)) + dy{d};
-                    
+                for d = 1:dots.nDir 
+                    dots.x(idx(d:dots.nDir:end)) = dots.x(idx(d:dots.nDir:end)) + dx{d};
+                    dots.y(idx(d:dots.nDir:end)) = dots.y(idx(d:dots.nDir:end)) + dy{d};           
                 end
                 
                 % Move the dots that are outside the aperture back one aperture width.
-                dots.(condNames{c}).x(dots.(condNames{c}).x<dots.(condNames{c}).l) = dots.(condNames{c}).x(dots.(condNames{c}).x<dots.(condNames{c}).l) + dots.apertureSize(1);
-                dots.(condNames{c}).x(dots.(condNames{c}).x>dots.(condNames{c}).r) = dots.(condNames{c}).x(dots.(condNames{c}).x>dots.(condNames{c}).r) - dots.apertureSize(1);
-                dots.(condNames{c}).y(dots.(condNames{c}).y<dots.(condNames{c}).b) = dots.(condNames{c}).y(dots.(condNames{c}).y<dots.(condNames{c}).b) + dots.apertureSize(2);
-                dots.(condNames{c}).y(dots.(condNames{c}).y>dots.(condNames{c}).t) = dots.(condNames{c}).y(dots.(condNames{c}).y>dots.(condNames{c}).t) - dots.apertureSize(2);
+                dots.x(dots.x<dots.l) = dots.x(dots.x<dots.l) + dots.apertureSize(1);
+                dots.x(dots.x>dots.r) = dots.x(dots.x>dots.r) - dots.apertureSize(1);
+                dots.y(dots.y<dots.b) = dots.y(dots.y<dots.b) + dots.apertureSize(2);
+                dots.y(dots.y>dots.t) = dots.y(dots.y>dots.t) - dots.apertureSize(2);
                 
             end
             
-        else
+        else % Rest condition
             changeDir = true;
         end
         
         % Fixation Cross
         drawFixationCross( windowID , S , 101 , 0 );
-               
+        
         % Do it
         Screen('Flip',windowID);
         
@@ -201,7 +195,7 @@ try
     output_filename = [S.SUBJECT '_Localiser_' datestr(now,'HHMM_ddmmmmyyyy')];
     save(fullfile(S.output_path,output_filename),'OutputLoc')
     
-    disp('[runLocaliser] Done.')
+    disp('[runLocalizer] Done.')
     
 catch ME
     
@@ -218,7 +212,7 @@ catch ME
     % -- Deal with it
     switch ME.identifier
         case 'user:escape'
-            disp('[runLocaliser] Aborted by escape key.')
+            disp('[runLocalizer] Aborted by escape key.')
         otherwise
             rethrow(ME);
             % psychrethrow(psychlasterror);

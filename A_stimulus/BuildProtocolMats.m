@@ -1,58 +1,37 @@
-% clear,clc;
+% This script generates the protocol matrices, based on a .prt file
+% (BrainVoyager stimulus/protocol file)
+clear,clc;
 
 addpath('functions')
-addpath('prt')
 
 TR = 1.5;
 fps = 60;
 
-input_path = fullfile('E:','Google Drive','GitHub_DATA','ICNAS_VisualPerception','Hysteresis_Paper','input_stim_prtmat');
+prt_path = fullfile(pwd,'prt'); % where the .prts are
+input_path = fullfile(pwd,'input'); % output folder for the .mats
 
-%% Localiser
-[ framesCond , nFrames , nVols , condNames , nCond ] = extractFramesPRTLoc( 'prt' , 'Localiser.prt' , TR , fps );
-save(fullfile(input_path,'Protocols_Localiser.mat'),'framesCond','nFrames','condNames','nVols','nCond');
+%% Localizer
+extractFramesPRTLoc( prt_path , 'Localizer.prt' , TR , fps , input_path);
 
-%% Settings Run C
+%% Settings Run C and H
 % Make sure it matches with definitions in buildDots.m and prts
 nDots = 2750;
-blockVols = 11;
+blockVolsC = 11;
+blockVolsH = 21;
 
-%% Run C1
-[ framesCond , framesDots, framesPercentage , numFrames , nVols , condNames , nCond, intervalsPRT , intervals ] = extractFramesPRTC( 'prt' , 'RunC1.prt' , TR , fps , nDots , blockVols );
-save(fullfile(input_path,'Protocols_RunC1.mat'),'framesCond','framesDots','framesPercentage','numFrames','condNames','nCond','intervalsPRT','intervals');
+%% Runs C 1,2,3,4
+for rr = 1:4
+    
+    extractFramesPRTC( prt_path , rr , TR , fps , nDots , blockVolsC , input_path);
+    
+end
 
-%% Run C2
-[ framesCond , framesDots, framesPercentage , numFrames , nVols , condNames , nCond, intervalsPRT , intervals ] = extractFramesPRTC( 'prt' , 'RunC2.prt' , TR , fps , nDots , blockVols );
-save(fullfile(input_path,'Protocols_RunC2.mat'),'framesCond','framesDots','framesPercentage','numFrames','condNames','nCond','intervalsPRT','intervals');
+%% Run H 1,2,3,4
+for rr = 1:4
 
-%% Run C3
-[ framesCond , framesDots, framesPercentage , numFrames , nVols , condNames , nCond, intervalsPRT , intervals ] = extractFramesPRTC( 'prt' , 'RunC3.prt' , TR , fps , nDots , blockVols );
-save(fullfile(input_path,'Protocols_RunC3.mat'),'framesCond','framesDots','framesPercentage','numFrames','condNames','nCond','intervalsPRT','intervals');
+    extractFramesPRTHyst( prt_path , rr , TR , fps , nDots , blockVolsH , input_path );
 
-%% Run C4
-[ framesCond , framesDots, framesPercentage , numFrames , nVols , condNames , nCond, intervalsPRT , intervals ] = extractFramesPRTC( 'prt' , 'RunC4.prt' , TR , fps , nDots , blockVols );
-save(fullfile(input_path,'Protocols_RunC4.mat'),'framesCond','framesDots','framesPercentage','numFrames','condNames','nCond','intervalsPRT','intervals');
-
-%% Settings Run H
-% Make sure it matches with definitions in buildDots.m and prts
-nDots = 2750;
-blockVols = 21;
-
-%% Run H1
-[ framesCond , framesDots, framesPercentage , numFrames , nVols , condNames , nCond , intervalsPRT ] = extractFramesPRTHyst( 'prt' , 'RunH1.prt' , TR , fps , nDots , blockVols );
-save(fullfile(input_path,'Protocols_RunH1.mat'),'framesCond','framesDots','framesPercentage','numFrames','condNames','nCond','intervalsPRT');
-
-%% Run H2
-[ framesCond , framesDots, framesPercentage , numFrames , nVols , condNames , nCond , intervalsPRT ] = extractFramesPRTHyst( 'prt' , 'RunH2.prt' , TR , fps , nDots , blockVols );
-save(fullfile(input_path,'Protocols_RunH2.mat'),'framesCond','framesDots','framesPercentage','numFrames','condNames','nCond','intervalsPRT');
-
-%% Run H3
-[ framesCond , framesDots, framesPercentage , numFrames , nVols , condNames , nCond , intervalsPRT ] = extractFramesPRTHyst( 'prt' , 'RunH3.prt' , TR , fps , nDots , blockVols );
-save(fullfile(input_path,'Protocols_RunH3.mat'),'framesCond','framesDots','framesPercentage','numFrames','condNames','nCond','intervalsPRT');
-
-%% Run H4
-[ framesCond , framesDots, framesPercentage , numFrames , nVols , condNames , nCond , intervalsPRT ] = extractFramesPRTHyst( 'prt' , 'RunH4.prt' , TR , fps , nDots , blockVols );
-save(fullfile(input_path,'Protocols_RunH4.mat'),'framesCond','framesDots','framesPercentage','numFrames','condNames','nCond','intervalsPRT');
+end
 
 %% Clear
 clear;
