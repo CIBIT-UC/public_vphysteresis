@@ -9,7 +9,12 @@ Visual Perception group at the Coimbra Institute for Biomedical Imaging and Tran
 
 ## Index
 1. **A_stimulus** - stimulus scripts.
-2. 
+2. **B_keypress** - scripts for analysing keypress data.
 3. 
 4.
 
+---
+## Requirements
+- MATLAB 2015b or higher
+- Psychtoolbox 3
+- Auxiliary files stored in (folder)
