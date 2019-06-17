@@ -59,7 +59,7 @@ screenNumber = 50;
 %% Initialize
 [ S ] = initHysteresis( S , screenNumber );
 
-%% Load Textures
+%% Load or Create Textures
 texture_file = fullfile(S.input_path,sprintf('Textures_%i_sB%i_tB%i_l%i.mat',...
     S.height,S.screenBackground,S.textBackground,S.lines));
 

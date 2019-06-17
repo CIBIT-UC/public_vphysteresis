@@ -34,5 +34,5 @@ for rr = 1:4
 end
 
 %% Clear
-clear;
+clear
 disp('Protocols .mat created.')
