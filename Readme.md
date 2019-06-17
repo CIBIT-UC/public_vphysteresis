@@ -1,5 +1,5 @@
 # Repository for code - Hysteresis Experiment
-The complete set of code used for the stimulus and data analysis of the study "*Identification of competing neural mechanisms underlying visual perceptual hysteresis: persistence vs. adaptation*".
+Code used for the stimulus and data analysis of the study "*Identification of competing neural mechanisms underlying visual perceptual hysteresis: persistence vs. adaptation*".
 
 **Authors:** Teresa Sousa, Alexandre Sayal, Ricardo Martins, João Duarte, Gabriel Costa
 
@@ -10,8 +10,7 @@ Visual Perception group at the Coimbra Institute for Biomedical Imaging and Tran
 ## Index
 1. **A_stimulus** - stimulus scripts.
 2. **B_keypress** - scripts for analysing keypress data.
-3. 
-4.
+3. **C_keypress_simulation** - scripts for the automatic classification of perceptual history effects.
 
 ---
 ## Requirements
