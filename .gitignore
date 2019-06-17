@@ -1,3 +1,3 @@
-A_stimulus/input/
-A_stimulus/output/
+A_stimulus/input/*.mat
+A_stimulus/output/*.mat
 *.asv
