@@ -11,14 +11,16 @@ Visual Perception group at the Coimbra Institute for Biomedical Imaging and Tran
 1. **A_stimulus** - stimulus scripts.
 2. **B_keypress** - scripts for analysing keypress data.
 3. **C_keypress_simulation** - scripts for the automatic classification of perceptual history effects.
+4. **D_Effect block** - create protocols with the effect block predictor and create single study design matrices and multistudy design matrices for each effect.
+5. **E_betaextraction** - extract betas per run per subject using javascript and Brainvoyager
 
 TODO
 
-4. Effect block
 5. Hysteresis comparison between trajectories
 6. Figures
 ---
 ## Requirements
 - MATLAB 2015b or higher
+- Neuroelf v1.1
 - Psychtoolbox 3
 - Auxiliary files stored in (folder)
