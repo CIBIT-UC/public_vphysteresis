@@ -35,9 +35,11 @@ rawdata_path = fullfile('...','Hysteresis_Paper','input_raw_keypress');
 % This data comes from BuildProtocsMats.m, found in the stimulus folder.
 input_path = fullfile(pwd,'input');
 
+
 % Output folders
 output_path = fullfile('...','Hysteresis_Paper','output_keypress');
 output_images = fullfile('...','Hysteresis_Paper','output_keypress_images');
+
 
 %% Settings Dots
 nDots = 2750;
@@ -84,11 +86,11 @@ for s = 1:nSubjects
         load(fullfile(input_path,['Protocols_' r{:} '.mat']));
         
         % --- Convert to continuous key presses
-        KeyPresses.(r{:}) = zeros(numFrames,1);
+        KeyPresses.(r{:}) = zeros(nFrames,1);
         
         currentKeeper = KeysOrig(1,1);
         
-        for t = 2:numFrames
+        for t = 2:nFrames
             
             if framesCond(t) == 1
                 currentKeeper = 0;
@@ -162,11 +164,11 @@ for s = 1:nSubjects
         load(fullfile(input_path,['Protocols_' runNames{r} '.mat']));
         
         % --- Convert to continuous key presses
-        KeyPresses.(runNames{r}) = zeros(numFrames,1);
+        KeyPresses.(runNames{r}) = zeros(nFrames,1);
         
         currentKeeper = KeysOrig(1,1);
         
-        for t = 2:numFrames
+        for t = 2:nFrames
             
             if framesCond(t) == 1
                 currentKeeper = 0;
