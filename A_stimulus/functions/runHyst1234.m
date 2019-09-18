@@ -29,14 +29,14 @@ end
 
 %% Read PRT
 load(fullfile(S.input_path,['Protocols_' run_name '.mat']),...
-    'framesCond','framesDots','framesPercentage','numFrames','condNames');
+    'framesCond','framesDots','framesPercentage','nFrames','condNames');
 
 %% Identify discard and static conditions
 discardCondIdx = find(ismember(condNames, 'Discard')) ;
 staticCondIdx = find(ismember(condNames, 'Static')) ;
 
 %% Initialise key-related stuff
-keysPressed = zeros(numFrames , 2);
+keysPressed = zeros(nFrames, 2);
 key_codes = zeros(2,1);
 KbName('UnifyKeyNames');
 
@@ -165,7 +165,7 @@ try
     
     init = GetSecs;
     
-    while t < numFrames % Iteration on the frames
+    while t < nFrames % Iteration on the frames
         
         % Make Texture
         windowtext = Screen('MakeTexture', windowID, T.Textures{textIndexY,textIndexX});
