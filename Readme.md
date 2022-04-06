@@ -1,5 +1,5 @@
 # Repository for code - Hysteresis Experiment
-Code used for the stimulus and data analysis of the study "*Identification of competing neural mechanisms underlying visual perceptual hysteresis: persistence vs. adaptation*".
+Code used for the stimulus and data analysis of the study "*Identification of competing neural mechanisms underlying positive and negative perceptual hysteresis in the human visual system*". DOI:(https://doi.org/10.1016/j.neuroimage.2020.117153)
 
 **Authors:** Teresa Sousa, Alexandre Sayal, Ricardo Martins, João Duarte, Gabriel Costa
 
